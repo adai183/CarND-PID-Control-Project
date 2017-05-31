@@ -19,14 +19,35 @@ void PID::Init(double Kp_, double Ki_, double Kd_) {
     p_error = 0;
 	i_error = 0;
 	d_error = 0;
+
+
+	// window size for cte running average 
+	win_size_cte = 100000;
 	
 }
 
 
 void PID::UpdateError(double cte_) {
+	
+	// calculate running average of cte
+	hist_cte.push_back(cte_);
+	
+	if (hist_cte.size() > win_size_cte)
+	{
+		// remove first element
+		hist_cte.erase(hist_cte.begin()+0);
+	}
+	
+	double cte_sum = 0;
+	for (int i = 0; i < hist_cte.size(); ++i)
+	{
+		cte_sum += hist_cte[i];
+	}
+	
+	int_cte = cte_sum / hist_cte.size();
+
 	prev_cte = cte;
 	cte = cte_;
-	int_cte = int_cte + cte;
 
 	p_error = Kp* cte;
 	i_error = Ki * int_cte;
@@ -39,4 +60,3 @@ double PID::TotalError() {
 
 	return total_error;
 }
-

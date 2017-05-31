@@ -1,6 +1,8 @@
 #ifndef PID_H
 #define PID_H
 
+#include <vector>
+
 class PID {
 public:
   /*
@@ -25,7 +27,10 @@ public:
   double prev_cte;
   double int_cte;
 
-  float dp[3];
+  // CTE history
+  std::vector< double > hist_cte;
+  // window size for cte running average
+  int win_size_cte;
 
   /*
   * Constructor
@@ -51,6 +56,11 @@ public:
   * Calculate the total PID error.
   */
   double TotalError();
+
+  /*
+  * Calculate running average steering angle.
+  */
+  double RunningAverageSA(double steering_angle);
 };
 
 #endif /* PID_H */
